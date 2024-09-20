@@ -1,4 +1,4 @@
-# layermaker-maven-plugin
+# aws-layermaker-maven-plugin
 ## Description
 Zips up all your project's provided dependencies and the transitive dependencies of those provided dependencies.  It puts the files under /java/lib in the zip and adds a Manifest.  It attaches the zip file to the deployment artifacts so that the zip is installed to you local repo or deployed to a remote repo.  The zip has the same group and artifiact ids, but adds a classifier of `layer`.
 
