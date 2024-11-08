@@ -30,21 +30,21 @@ public class CreateLayerMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         try {
             Set<Artifact> artifacts = project.getArtifacts();
-            Set<File> providedArtifactFiles = new HashSet<>();
+            Set<File> requiredDependencies = new HashSet<>();
 
             for (Artifact artifact : artifacts) {
-                if ("provided".equals(artifact.getScope())) {
+                if ("runtime".equals(artifact.getScope()) || "compile".equals(artifact.getScope())) {
                     File file = artifact.getFile();
                     if (file != null && file.exists()) {
-                        providedArtifactFiles.add(file);
+                        requiredDependencies.add(file);
                     } else {
                         getLog().warn("Artifact file not found: " + artifact);
                     }
                 }
             }
 
-            if (providedArtifactFiles.isEmpty()) {
-                getLog().info("No provided scope dependencies found.");
+            if (requiredDependencies.isEmpty()) {
+                getLog().info("No required dependencies found.");
                 return;
             }
 
@@ -52,14 +52,14 @@ public class CreateLayerMojo extends AbstractMojo {
             File zipFile = new File(project.getBuild().getDirectory(),
                     project.getArtifactId() + "-" + project.getVersion() + "-layer.zip");
 
-            zipDependencies(providedArtifactFiles, zipFile);
+            zipDependencies(requiredDependencies, zipFile);
 
             // Attach the zip file as an artifact
             projectHelper.attachArtifact(project, "zip", "layer", zipFile);
 
-            getLog().info("Provided dependencies zipped and attached as artifact: " + zipFile.getName());
+            getLog().info("Required dependencies zipped and attached as artifact: " + zipFile.getName());
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to zip provided dependencies", e);
+            throw new MojoExecutionException("Failed to zip required dependencies", e);
         }
     }
 
